@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.dotoku</groupId>
-	<artifactId>user</artifactId>
+	<artifactId>carhop</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>user</name>
+	<name>carhop</name>
 	<description>User service for hope on app</description>
 	<url/>
 	<licenses>
