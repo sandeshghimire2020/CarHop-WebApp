@@ -1,0 +1,9 @@
+# application.yml
+#spring:
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/CarHop
+#    username: postgres
+#    password: 9815
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
