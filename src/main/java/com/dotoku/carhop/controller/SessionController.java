@@ -20,7 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping(path = "/api/v1/session")
 public class SessionController {
-    
+
         private final SessionService sessionService;
 
         @Operation(summary = "Start a session for a ride", responses = {
@@ -51,12 +51,35 @@ public class SessionController {
                         destinationAddress, destinationCity, destinationState, destinationZip
                 );
           }
+        @Operation(summary = "Update a session for a ride", responses = {
+                @ApiResponse(responseCode = "200", description = "Session updated Successfully."),
+                @ApiResponse(responseCode = "400", description = "Bad request, unable to update session.") })
+        @PutMapping("/{sessionId}")
+        public ResponseEntity<HopSessionDto> updateSession(@Valid @RequestBody HopSessionDto hopSessionDto, @PathVariable long sessionId) {
+            return sessionService.updateSession(sessionId, hopSessionDto);
+        }
 
 
-          //update time on session
         //delete session
-        //update other details on session
+          @Operation(summary = "Delete a session of a ride", responses = {
+                  @ApiResponse(responseCode = "200", description = "Session deleted Successfully."),
+                  @ApiResponse(responseCode = "400", description = "Bad request, unable delete session.") })
+          @DeleteMapping("/{sessionId}")
+          public ResponseEntity<String> deleteSession(@PathVariable long sessionId) {
+                  return sessionService.deleteSession(sessionId);
+          }
 
 
+        //update time on session only after it is expired
+
+        @Operation(summary = "Increase time of a session", responses = {
+                @ApiResponse(responseCode = "200", description = "Session time updated Successfully."),
+                @ApiResponse(responseCode = "400", description = "Bad request, unable to process data.") })
+        @PostMapping("/{sessionId}")
+        public ResponseEntity<String> increaseSessionTime(@PathVariable long sessionId,
+                                                          @RequestParam(required = true,
+                                                                  defaultValue = "THIRTY_MIN") ExpirationDuration updateTime) {
+                return sessionService.increaseSessionTime(sessionId, updateTime);
+        }
         
 }

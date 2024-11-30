@@ -1,9 +1,14 @@
-# application.yml
-#spring:
-#  datasource:
-#    url: jdbc:postgresql://localhost:5432/CarHop
-#    username: postgres
-#    password: 9815
-#  jpa:
-#    hibernate:
-#      ddl-auto: update
+spring:
+  application:
+    name: carhop
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/carhop
+    username: postgres
+    password: Archana@@@1
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    # Uncomment the following line if you want to enable SQL logging
+    # show-sql: true

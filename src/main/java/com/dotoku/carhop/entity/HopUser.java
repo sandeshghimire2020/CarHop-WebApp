@@ -38,11 +38,11 @@ public class HopUser {
     private boolean verified;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    private Vehicle vehicle; // Fixed typo from Vehical to Vehicle
+    private Vehicle vehicle;
 
     @OneToMany(mappedBy = "hopUser", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews;
 
     @OneToMany(mappedBy = "hopUser", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<HopRequest> rideRequests; // Relation to RideRequest entity
+    private List<HopRequest> rideRequests;
 }
