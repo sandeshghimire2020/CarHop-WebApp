@@ -2,6 +2,7 @@ package com.dotoku.carhop.service;
 
 import com.dotoku.carhop.dto.HopSessionDto;
 import com.dotoku.carhop.dto.SessionResponseDto;
+import com.dotoku.carhop.dto.mapper.SessionMapper;
 import com.dotoku.carhop.entity.ExpirationDuration;
 import com.dotoku.carhop.entity.HopSession;
 import com.dotoku.carhop.entity.HopUser;
@@ -9,6 +10,7 @@ import com.dotoku.carhop.repository.SessionRepository;
 import com.dotoku.carhop.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.Session;
 import org.apache.catalina.User;
 import org.springframework.cglib.core.Local;
 import org.springframework.http.ResponseEntity;
@@ -23,25 +25,19 @@ public class SessionService {
 
     private final SessionRepository sessionRepository;
     private final UserRepository userRepository;
+    private final SessionMapper sessionMapper;
 
     public ResponseEntity<SessionResponseDto> startSession(HopSessionDto hopSessionDto, ExpirationDuration expirationDuration){
 
-        //call microservice user to get User info and vehical info
+        //TODO: Vehical map check if it is included as a part of user or not
 
-        HopSession hopSession = new HopSession();
+        HopSession hopSession = sessionMapper.mapDtoToEntity(hopSessionDto);
 
         HopUser hopUser = userRepository.findById(hopSessionDto.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found!"));
 
-        hopSession.setAvailableSeats(hopSessionDto.getAvailableSeats());
-        hopSession.setOriginAddress(hopSessionDto.getOriginAddress());
-        hopSession.setOriginCity(hopSessionDto.getOriginCity());
-        hopSession.setOriginZip(hopSessionDto.getOriginZip());
-        hopSession.setDestinationAddress(hopSessionDto.getDestinationAddress());
-        hopSession.setDestinationCity(hopSessionDto.getDestinationCity());
-        hopSession.setDestinationZip(hopSessionDto.getDestinationZip());
-        hopSession.setReturnBack(hopSessionDto.getReturnBack());
-        hopSession.setReturnTime(hopSessionDto.getReturnTime());
+        //store user
+        hopSession.setHopUser(hopUser);
 
         //time right now
         LocalDateTime localDateTime = LocalDateTime.now();
@@ -49,9 +45,6 @@ public class SessionService {
 
         //expires at
         hopSession.setExpiresAt(localDateTime.plusMinutes(expirationDuration.getMinutes()));
-
-        //store user
-        hopSession.setHopUser(hopUser);
 
         sessionRepository.save(hopSession);
 
@@ -63,6 +56,28 @@ public class SessionService {
 
         return ResponseEntity.ok(sessionResponseDto);
     }
+
+    public ResponseEntity<HopSessionDto> updateSession(long sessionId, HopSessionDto hopSessionDto) {
+
+        //TODO: Vehical is included in User but see if we can show default vehical
+
+        HopSession hopSession = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new EntityNotFoundException("Session not found!"));
+        HopUser hopUser = userRepository.findById(hopSessionDto.getUserId())
+                .orElseThrow(() -> new EntityNotFoundException("User not found!"));
+        if (!hopUser.getId().equals(hopSession.getHopUser().getId())) {
+           throw new IllegalStateException("User cannot be changed for a session.");
+         }
+
+        hopSession = sessionMapper.mapDtoToEntity(hopSessionDto);
+        sessionRepository.save(hopSession);
+
+        HopSessionDto responseHopSessionDto = sessionMapper.mapEntityToDto(hopSession);
+
+        return ResponseEntity.ok(responseHopSessionDto);
+
+    }
+
 
     public List<HopSession> getSessionsWithFilters(
             String originAddress, String originCity, String originState, String originZip,
@@ -83,6 +98,25 @@ public class SessionService {
                 destinationZip,
                 currentDateTime
         );
+    }
+
+    public ResponseEntity<String> deleteSession(long sessionId){
+        HopSession hopSession = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new EntityNotFoundException("Session not found!"));
+        sessionRepository.delete(hopSession);
+        return ResponseEntity.ok("Session deleted successfully.");
+    }
+
+    public ResponseEntity<String> increaseSessionTime(long sessionId, ExpirationDuration updateTime){
+        HopSession hopSession = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new EntityNotFoundException("Session not found!"));
+        LocalDateTime localDateTime = LocalDateTime.now();
+        if(!localDateTime.isAfter(hopSession.getExpiresAt().minusMinutes(10))){
+            throw new IllegalStateException("Request session time increase when you have less than 10 minutes.");
+        } else {
+            hopSession.setExpiresAt(localDateTime.plusMinutes(updateTime.getMinutes()));
+        }
+        return ResponseEntity.ok("The session time is increased by " + updateTime.getMinutes() + " minutes.");
     }
 
 }

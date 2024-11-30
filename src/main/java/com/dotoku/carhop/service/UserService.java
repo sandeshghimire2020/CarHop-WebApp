@@ -8,8 +8,14 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -56,6 +62,15 @@ public class UserService {
 
         userRepository.delete(hopUser);
         return ResponseEntity.ok("User deleted successfully.");
+    }
+
+    public List<HopUserDto> getAllUsers(int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber,pageSize);
+        Page<HopUser> users = userRepository.findAll(pageable);
+        List<HopUserDto> usersDto = users.stream()
+                .map(userMapper::mapEntityToDto)
+                .collect(Collectors.toList());
+        return usersDto;
     }
 
 }

@@ -7,8 +7,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.query.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.awt.print.Pageable;
+import java.util.List;
 
 @Tag(name = "CarHop User controller")
 @RestController
@@ -24,6 +28,19 @@ public class UserController {
     @PostMapping()
     public ResponseEntity<HopUserDto> addUser(@Valid @RequestBody HopUserDto hopUserDto) {
         return userService.addUser(hopUserDto);
+    }
+
+    @Operation(summary = "Get all users", responses = {
+            @ApiResponse(responseCode = "200", description = "Success."),
+            @ApiResponse(responseCode = "400", description = "Bad request, unable to process data.")
+    })
+
+    @GetMapping
+    public ResponseEntity<List<HopUserDto>> getAllUsers(
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "10") int pageSize) {
+        List<HopUserDto> users = userService.getAllUsers(pageNumber, pageSize);
+        return ResponseEntity.ok(users);
     }
 
     @Operation(summary = "Get user", responses = {
@@ -49,5 +66,7 @@ public class UserController {
     public ResponseEntity<String> deleteUser(@PathVariable Long userId) {
         return userService.deleteUser(userId);
     }
+
+
 
 }
