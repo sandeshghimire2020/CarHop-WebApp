@@ -37,6 +37,7 @@ public class HopUser {
 
     private boolean verified;
 
+    //maybe vehicle can be one to many? and make a default one?
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Vehicle vehicle;
 

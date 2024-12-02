@@ -1,6 +1,7 @@
 package com.dotoku.carhop.controller;
 
 import com.dotoku.carhop.dto.HopUserDto;
+import com.dotoku.carhop.dto.VehicleDto;
 import com.dotoku.carhop.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -67,6 +68,13 @@ public class UserController {
         return userService.deleteUser(userId);
     }
 
+    @Operation(summary = "Update a vehicle", responses = {
+            @ApiResponse (responseCode = "200", description = "Vehical updated Successfully."),
+            @ApiResponse(responseCode = "400", description = "Bad request, unable to process user data.") })
+    @PutMapping(path = "/{userId}/vehicle")
+    public ResponseEntity<String> updateUserVehicle(@Valid @RequestBody VehicleDto vehicleDto, @PathVariable Long userId) {
+        return userService.updateVehicle(vehicleDto, userId);
+    }
 
 
 }
