@@ -50,7 +50,7 @@ public class RequestService {
         return ResponseEntity.ok(hopRequestDto);
     }
 
-    public ResponseEntity<String> cancelRequest(Long requestId){
+    public ResponseEntity<String> deleteRequest(Long requestId){
 
         HopRequest hopRequest = requestRepository.findById(requestId)
                 .orElseThrow(() -> new EntityNotFoundException("Request Not found!"));
@@ -60,4 +60,26 @@ public class RequestService {
         return ResponseEntity.ok("Request Canceled!");
     }
 
+    public ResponseEntity<String> approveRequest(Long requestId){
+
+        HopRequest hopRequest = requestRepository.findById(requestId)
+                .orElseThrow(() -> new EntityNotFoundException("Request Not found!"));
+
+        hopRequest.setStatus(RequestStatus.APPROVED.toString());
+
+        requestRepository.save(hopRequest);
+
+        return ResponseEntity.ok("Request Approved!");
+    }
+
+    public ResponseEntity<String> rejectRequest(Long requestId){
+
+        HopRequest hopRequest = requestRepository.findById(requestId)
+                .orElseThrow(() -> new EntityNotFoundException("Request Not found!"));
+
+        hopRequest.setStatus(RequestStatus.REJECTED.toString());
+        requestRepository.delete(hopRequest);
+
+        return ResponseEntity.ok("Request Rejected!");
+    }
 }

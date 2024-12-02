@@ -1,8 +1,10 @@
 package com.dotoku.carhop.service;
 
 import com.dotoku.carhop.dto.HopUserDto;
+import com.dotoku.carhop.dto.VehicleDto;
 import com.dotoku.carhop.dto.mapper.UserMapper;
 import com.dotoku.carhop.entity.HopUser;
+import com.dotoku.carhop.entity.Vehicle;
 import com.dotoku.carhop.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -29,7 +31,6 @@ public class UserService {
 
     @Transactional
     public ResponseEntity<HopUserDto> addUser(HopUserDto userDto){
-
         HopUser hopUser = userMapper.mapDtoToEntity(userDto);
         userRepository.save(hopUser);
         userDto.setId(hopUser.getId());
@@ -37,7 +38,6 @@ public class UserService {
     }
 
     public ResponseEntity<HopUserDto> getUser(Long userId){
-
         HopUser hopUser = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found!"));
         HopUserDto userDto = userMapper.mapEntityToDto(hopUser);
@@ -45,7 +45,6 @@ public class UserService {
     }
 
     public ResponseEntity<HopUserDto> updateUser(HopUserDto userDto, Long userId){
-
         HopUser hopUser = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found!"));
 
@@ -56,7 +55,6 @@ public class UserService {
     }
 
     public ResponseEntity<String> deleteUser(Long userId) {
-
         HopUser hopUser = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found!"));
 
@@ -72,5 +70,23 @@ public class UserService {
                 .collect(Collectors.toList());
         return usersDto;
     }
+
+    public ResponseEntity<String> updateVehicle(VehicleDto vehicleDto, long userId) {
+        HopUser hopUser = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found!"));
+        Vehicle vehicle = hopUser.getVehicle();
+
+        vehicle.setMake(vehicleDto.getMake());
+        vehicle.setPlateNumber(vehicleDto.getPlateNumber());
+        vehicle.setModel(vehicleDto.getModel());
+        vehicle.setType(vehicleDto.getType());
+        vehicle.setYear(vehicleDto.getYear());
+
+        userRepository.save(hopUser);
+
+        return ResponseEntity.ok("Vehicle updated successfully.");
+    }
+
+
 
 }
