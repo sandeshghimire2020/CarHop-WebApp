@@ -1,6 +1,7 @@
 package com.dotoku.carhop.dto.mapper;
 
 import com.dotoku.carhop.dto.HopUserDto;
+import com.dotoku.carhop.dto.HopUserRequestDto;
 import com.dotoku.carhop.dto.IdentificationDto;
 import com.dotoku.carhop.dto.VehicleDto;
 import com.dotoku.carhop.entity.HopUser;
@@ -30,7 +31,7 @@ public class UserMapper {
         return hopUser;
     }
 
-    public HopUser mapDtoToEntity(HopUserDto userDto){
+    public HopUser mapDtoToEntity(HopUserRequestDto userDto){
 
         HopUser hopUser = new HopUser();
         Identification identification = mapDtoToIdentification(userDto.getIdentification());
@@ -44,9 +45,11 @@ public class UserMapper {
                 hopUser.setMiddleName(userDto.getMiddleName());
                 hopUser.setLastName(userDto.getLastName());
                 hopUser.setDateOfBirth(userDto.getDateOfBirth());
+                hopUser.setEmail(userDto.getEmail());
                 hopUser.setGender(userDto.getGender());
                 hopUser.setVerified(userDto.isVerified());
                 hopUser.setIdentification(identification);
+                hopUser.setRole(userDto.getRole());
         return hopUser;
     }
 
@@ -80,11 +83,13 @@ public class UserMapper {
             hopUserDto.setVehicle(vehicleDto);
         }
 
-        List<Long> reviewIds = hopUser.getReviews()
-                .stream()
-                .map(Review::getId)
-                .collect(Collectors.toList());
-
+        if(hopUser.getReviews() != null) {
+            List<Long> reviewIds = hopUser.getReviews()
+                    .stream()
+                    .map(Review::getId)
+                    .collect(Collectors.toList());
+            hopUserDto.setReviewsId(reviewIds);
+        }
         hopUserDto.setId(hopUser.getId());
         hopUserDto.setFirstName(hopUser.getFirstName());
         hopUserDto.setMiddleName(hopUser.getMiddleName());
@@ -92,8 +97,9 @@ public class UserMapper {
         hopUserDto.setDateOfBirth(hopUser.getDateOfBirth());
         hopUserDto.setGender(hopUser.getGender());
         hopUserDto.setVerified(hopUser.isVerified());
-        hopUserDto.setReviewsId(reviewIds);
         hopUserDto.setIdentification(identificationDto);
+        hopUserDto.setEmail(hopUser.getEmail());
+        hopUserDto.setRole(hopUser.getRole());
 
         return hopUserDto;
     }

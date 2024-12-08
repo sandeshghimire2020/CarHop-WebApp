@@ -15,7 +15,7 @@ public class HopRequestDto {
 
     private Long id;
     private Long hopUserId;
-
+    private String status;
     private Long hopSessionId;
 
     private LocalDateTime requestTime;

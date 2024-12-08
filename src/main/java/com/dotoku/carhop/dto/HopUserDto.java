@@ -26,6 +26,8 @@ public class HopUserDto {
     @Size(min = 1, max = 30, message = "Last name should be at most 30 characters.")
     private String lastName;
 
+    private String email;
+
     @NotBlank(message = "Date of Birth is required.")
     @Past(message = "Date of Birth mast be in the past.")
     private LocalDate dateOfBirth;
@@ -42,5 +44,5 @@ public class HopUserDto {
 
     private List<Long> reviewsId;
 
-
+    private String role;
 }

@@ -33,5 +33,8 @@ public interface SessionRepository extends JpaRepository<HopSession, Long> {
             @Param("currentDateTime") LocalDateTime currentDateTime
     );
 
+    @Query(value = "SELECT * FROM hop_session WHERE user_id = :userId", nativeQuery = true)
+    List<HopSession> findByUserId(@Param("userId") long userId);
+
 
 }

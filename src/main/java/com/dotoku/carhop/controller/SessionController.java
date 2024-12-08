@@ -75,11 +75,20 @@ public class SessionController {
         @Operation(summary = "Increase time of a session", responses = {
                 @ApiResponse(responseCode = "200", description = "Session time updated Successfully."),
                 @ApiResponse(responseCode = "400", description = "Bad request, unable to process data.") })
-        @PostMapping("/{sessionId}")
+        @PostMapping("/{sessionId}/time")
         public ResponseEntity<String> increaseSessionTime(@PathVariable long sessionId,
                                                           @RequestParam(required = true,
                                                                   defaultValue = "THIRTY_MIN") ExpirationDuration updateTime) {
                 return sessionService.increaseSessionTime(sessionId, updateTime);
         }
+
+    @Operation(summary = "Get sessions of a User", responses = {
+            @ApiResponse(responseCode = "200", description = "Session Successfully retrieved."),
+            @ApiResponse(responseCode = "400", description = "Bad request, unable to get session.") })
+    @GetMapping("/{userId}")
+    public ResponseEntity<List<HopSessionDto>> getSessionsForUser(@PathVariable long userId) {
+        return sessionService.getSessionsForUser(userId);
+    }
+    //TODO: pagination of getSessionsForUser and getAllSessions /w query
         
 }

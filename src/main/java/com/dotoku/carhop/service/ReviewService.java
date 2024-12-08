@@ -5,6 +5,7 @@ import com.dotoku.carhop.entity.HopUser;
 import com.dotoku.carhop.entity.Review;
 import com.dotoku.carhop.repository.ReviewRepository;
 import com.dotoku.carhop.repository.UserRepository;
+import com.dotoku.carhop.security.SecurityUtil;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,11 @@ public class ReviewService {
 
         HopUser hopUser = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found!"));
+
+        String loggedInEmail = SecurityUtil.getLoggedInEmail();
+        if (hopUser.getEmail().equals(loggedInEmail)) {
+            throw new IllegalStateException("You are not allowed to review yourself!");
+        }
 
         Review review = new Review();
 
