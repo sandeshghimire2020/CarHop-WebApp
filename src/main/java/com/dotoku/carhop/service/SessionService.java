@@ -8,6 +8,7 @@ import com.dotoku.carhop.entity.HopSession;
 import com.dotoku.carhop.entity.HopUser;
 import com.dotoku.carhop.repository.SessionRepository;
 import com.dotoku.carhop.repository.UserRepository;
+import com.dotoku.carhop.security.SecurityUtil;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.Session;
@@ -16,8 +17,10 @@ import org.springframework.cglib.core.Local;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +29,7 @@ public class SessionService {
     private final SessionRepository sessionRepository;
     private final UserRepository userRepository;
     private final SessionMapper sessionMapper;
+
 
     public ResponseEntity<SessionResponseDto> startSession(HopSessionDto hopSessionDto, ExpirationDuration expirationDuration){
 
@@ -65,6 +69,13 @@ public class SessionService {
                 .orElseThrow(() -> new EntityNotFoundException("Session not found!"));
         HopUser hopUser = userRepository.findById(hopSessionDto.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found!"));
+
+        //secirity Here
+        String loggedInEmail = SecurityUtil.getLoggedInEmail();
+        if (!hopSession.getHopUser().getEmail().equals(loggedInEmail)) {
+            throw new IllegalStateException("You are not authorized to update this session.");
+        }
+
         if (!hopUser.getId().equals(hopSession.getHopUser().getId())) {
            throw new IllegalStateException("User cannot be changed for a session.");
          }
@@ -103,6 +114,11 @@ public class SessionService {
     public ResponseEntity<String> deleteSession(long sessionId){
         HopSession hopSession = sessionRepository.findById(sessionId)
                 .orElseThrow(() -> new EntityNotFoundException("Session not found!"));
+
+        String loggedInEmail = SecurityUtil.getLoggedInEmail();
+        if (!hopSession.getHopUser().getEmail().equals(loggedInEmail)) {
+            throw new IllegalStateException("You are not authorized to delete this session.");
+        }
         sessionRepository.delete(hopSession);
         return ResponseEntity.ok("Session deleted successfully.");
     }
@@ -110,6 +126,12 @@ public class SessionService {
     public ResponseEntity<String> increaseSessionTime(long sessionId, ExpirationDuration updateTime){
         HopSession hopSession = sessionRepository.findById(sessionId)
                 .orElseThrow(() -> new EntityNotFoundException("Session not found!"));
+
+        String loggedInEmail = SecurityUtil.getLoggedInEmail();
+        if (!hopSession.getHopUser().getEmail().equals(loggedInEmail)) {
+            throw new IllegalStateException("You are not authorized to update this session.");
+        }
+
         LocalDateTime localDateTime = LocalDateTime.now();
         if(!localDateTime.isAfter(hopSession.getExpiresAt().minusMinutes(10))){
             throw new IllegalStateException("Request session time increase when you have less than 10 minutes.");
@@ -118,5 +140,14 @@ public class SessionService {
         }
         return ResponseEntity.ok("The session time is increased by " + updateTime.getMinutes() + " minutes.");
     }
+
+    public ResponseEntity<List<HopSessionDto>> getSessionsForUser(long userId){
+        List<HopSession> hopSessions = sessionRepository.findByUserId(userId);
+        List<HopSessionDto> hopSessionDtos = hopSessions.stream()
+                .map(sessionMapper::mapEntityToDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(hopSessionDtos);
+    }
+
 
 }

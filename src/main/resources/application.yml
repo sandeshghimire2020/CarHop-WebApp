@@ -3,12 +3,18 @@ spring:
     name: carhop
 
   datasource:
-    url: jdbc:postgresql://aws-0-us-west-1.pooler.supabase.com:6543/postgres
-    username: ${POSTGRE_USERNAME}
-    password: ${POSTGRE_PASSWORD}
+    url: jdbc:postgresql://localhost:5432/carhop
+
 
   jpa:
     hibernate:
       ddl-auto: update
     # Uncomment the following line if you want to enable SQL logging
     # show-sql: true
+#jwt:
+#  secret: dXNlLXNhZmUtYmFzZTY0LWVuY29kaW5n
+#  expiration: 36000000
+
+  jwt:
+    secret: "${JWT_SECRET}"
+    expiration: "${JWT_EXPIRATION:3600000}"

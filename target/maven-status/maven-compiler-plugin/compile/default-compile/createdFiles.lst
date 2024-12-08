@@ -1,7 +1,11 @@
+com/dotoku/carhop/exception/GlobalExceptionHandler.class
+com/dotoku/carhop/dto/mapper/SessionMapper.class
+com/dotoku/carhop/security/JwtRequestFilter.class
 com/dotoku/carhop/dto/mapper/UserMapper.class
 com/dotoku/carhop/controller/SessionController.class
 com/dotoku/carhop/entity/HopSession.class
 com/dotoku/carhop/dto/HopUserDto.class
+com/dotoku/carhop/exception/ErrorResponse.class
 com/dotoku/carhop/controller/ReviewController.class
 com/dotoku/carhop/repository/ReviewRepository.class
 com/dotoku/carhop/entity/Identification.class
@@ -11,8 +15,11 @@ com/dotoku/carhop/controller/RequestController.class
 com/dotoku/carhop/dto/IdentificationDto.class
 com/dotoku/carhop/entity/RequestStatus.class
 com/dotoku/carhop/controller/UserController.class
+com/dotoku/carhop/dto/HopUserRequestDto.class
 com/dotoku/carhop/entity/HopRequest.class
 com/dotoku/carhop/entity/Review.class
+com/dotoku/carhop/controller/AuthController.class
+com/dotoku/carhop/security/SecurityUtil.class
 com/dotoku/carhop/repository/UserRepository.class
 com/dotoku/carhop/entity/Vehicle.class
 com/dotoku/carhop/service/UserService.class
@@ -21,6 +28,8 @@ com/dotoku/carhop/entity/HopUser.class
 com/dotoku/carhop/dto/VehicleDto.class
 com/dotoku/carhop/service/RequestService.class
 com/dotoku/carhop/dto/HopRequestDto.class
+com/dotoku/carhop/security/SecurityConfig.class
+com/dotoku/carhop/security/JwtUtil.class
 com/dotoku/carhop/dto/ReviewDto.class
 com/dotoku/carhop/service/ReviewService.class
 com/dotoku/carhop/dto/SessionResponseDto.class

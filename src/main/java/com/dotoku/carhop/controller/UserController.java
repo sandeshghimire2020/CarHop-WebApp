@@ -1,6 +1,8 @@
 package com.dotoku.carhop.controller;
 
+import com.dotoku.carhop.dto.HopRequestDto;
 import com.dotoku.carhop.dto.HopUserDto;
+import com.dotoku.carhop.dto.HopUserRequestDto;
 import com.dotoku.carhop.dto.VehicleDto;
 import com.dotoku.carhop.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -8,11 +10,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.query.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.print.Pageable;
 import java.util.List;
 
 @Tag(name = "CarHop User controller")
@@ -27,7 +27,7 @@ public class UserController {
             @ApiResponse (responseCode = "200", description = "User Added Successfully."),
             @ApiResponse(responseCode = "400", description = "Bad request, unable to process user data.") })
     @PostMapping()
-    public ResponseEntity<HopUserDto> addUser(@Valid @RequestBody HopUserDto hopUserDto) {
+    public ResponseEntity<HopUserDto> addUser(@Valid @RequestBody HopUserRequestDto hopUserDto) {
         return userService.addUser(hopUserDto);
     }
 
@@ -44,7 +44,7 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-    @Operation(summary = "Get user", responses = {
+    @Operation(summary = "Get a user using userId", responses = {
             @ApiResponse (responseCode = "200", description = "Get User Success."),
             @ApiResponse(responseCode = "400", description = "Bad request, unable to process user data.") })
     @GetMapping(path = "/{userId}")
@@ -52,7 +52,7 @@ public class UserController {
         return userService.getUser(userId);
     }
 
-    @Operation(summary = "Update a user", responses = {
+    @Operation(summary = "Update a user using userId", responses = {
             @ApiResponse (responseCode = "200", description = "User updated Successfully."),
             @ApiResponse(responseCode = "400", description = "Bad request, unable to process user data.") })
     @PutMapping(path = "/{userId}")
@@ -60,7 +60,7 @@ public class UserController {
         return userService.updateUser(hopUserDto, userId);
     }
 
-    @Operation(summary = "Delete a new user", responses = {
+    @Operation(summary = "Delete a user", responses = {
             @ApiResponse (responseCode = "200", description = "User deleted Successfully."),
             @ApiResponse(responseCode = "400", description = "Bad request, unable to process user data.") })
     @DeleteMapping(path = "/{userId}")

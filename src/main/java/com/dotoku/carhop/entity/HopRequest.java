@@ -19,12 +19,12 @@ public class HopRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "hop_user_id", nullable = false)
     @JsonIgnore
     private HopUser hopUser; // The user making the request
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "hop_session_id", nullable = false)
     @JsonIgnore
     private HopSession hopSession; // The session the request is for

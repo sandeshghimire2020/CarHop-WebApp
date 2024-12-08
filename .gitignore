@@ -1,0 +1,19 @@
+# Ignore sensitive configuration files
+application.yml
+application.properties
+.env
+
+# Ignore target directory
+/target/
+
+# Ignore IntelliJ IDEA project files
+.idea/
+*.iml
+
+# Ignore logs
+*.log
+logs/
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db

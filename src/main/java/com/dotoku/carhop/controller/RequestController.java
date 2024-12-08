@@ -54,5 +54,22 @@ public class RequestController {
         }
     }
 
+    @Operation(summary = "Get all requests made by a user", responses = {
+            @ApiResponse(responseCode = "200", description = "Success."),
+            @ApiResponse(responseCode = "400", description = "Bad request, unable to get requests.")
+    })
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<HopRequestDto>> getRequestOfUser(@PathVariable long userId) {
+        return requestService.getRequestsByUserId(userId);
+    }
+
+    @Operation(summary = "Get a request using request IDr", responses = {
+            @ApiResponse(responseCode = "200", description = "Success."),
+            @ApiResponse(responseCode = "400", description = "Bad request, unable to get request.")
+    })
+    @GetMapping("/{requestId}")
+    public ResponseEntity<HopRequestDto> getRequestByRequestId(@PathVariable long requestId) {
+        return requestService.getRequestByRequestId(requestId);
+    }
 
 }

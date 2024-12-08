@@ -4,8 +4,11 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 
 @Setter
@@ -27,6 +30,9 @@ public class HopUser {
     @Column(nullable = false)
     private String lastName;
 
+    @Column(nullable = false, unique = true)
+    private String email;
+
     private LocalDate dateOfBirth;
 
     @Column(nullable = false)
@@ -44,6 +50,15 @@ public class HopUser {
     @OneToMany(mappedBy = "hopUser", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews;
 
-    @OneToMany(mappedBy = "hopUser", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<HopRequest> rideRequests;
+//    @OneToMany(mappedBy = "hopUser", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @ToString.Exclude
+//    private List<HopRequest> rideRequests;
+
+    @Column(nullable = false)
+    private String password;
+
+//    @Column(nullable = false)
+    private String role; // e.g., "USER", "ADMIN", "DRIVER"
+
+
 }
