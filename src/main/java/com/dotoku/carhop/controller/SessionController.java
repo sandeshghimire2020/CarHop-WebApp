@@ -2,6 +2,7 @@ package com.dotoku.carhop.controller;
 
 import com.dotoku.carhop.dto.HopSessionDto;
 import com.dotoku.carhop.dto.SessionResponseDto;
+import com.dotoku.carhop.dto.UserSessionResponseDto;
 import com.dotoku.carhop.entity.ExpirationDuration;
 import com.dotoku.carhop.entity.HopSession;
 import com.dotoku.carhop.service.SessionService;
@@ -36,7 +37,7 @@ public class SessionController {
                 @ApiResponse(responseCode = "200", description = "Sessions found Successfully."),
                 @ApiResponse(responseCode = "400", description = "Bad request, unable find session.") })
         @GetMapping()
-        public List<HopSession> getAllSessions(
+        public ResponseEntity<List<HopSessionDto>> getAllSessions(
                 @RequestParam(required = false) String originAddress,
                 @RequestParam(required = false) String originCity,
                 @RequestParam(required = false) String originState,
@@ -85,8 +86,8 @@ public class SessionController {
     @Operation(summary = "Get sessions of a User", responses = {
             @ApiResponse(responseCode = "200", description = "Session Successfully retrieved."),
             @ApiResponse(responseCode = "400", description = "Bad request, unable to get session.") })
-    @GetMapping("/{userId}")
-    public ResponseEntity<List<HopSessionDto>> getSessionsForUser(@PathVariable long userId) {
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<UserSessionResponseDto>> getSessionsForUser(@PathVariable long userId) {
         return sessionService.getSessionsForUser(userId);
     }
     //TODO: pagination of getSessionsForUser and getAllSessions /w query
