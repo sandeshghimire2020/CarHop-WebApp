@@ -1,12 +1,14 @@
 package com.dotoku.carhop.dto.mapper;
 
+import com.dotoku.carhop.dto.HopRequestDto;
 import com.dotoku.carhop.dto.HopSessionDto;
-import com.dotoku.carhop.dto.SessionResponseDto;
+import com.dotoku.carhop.dto.UserSessionResponseDto;
+import com.dotoku.carhop.entity.HopRequest;
 import com.dotoku.carhop.entity.HopSession;
-import com.dotoku.carhop.entity.HopUser;
-import com.dotoku.carhop.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Component
@@ -33,6 +35,7 @@ public class SessionMapper {
     public HopSessionDto mapEntityToDto(HopSession hopSession){
 
         HopSessionDto hopSessionDto = new HopSessionDto();
+        hopSessionDto.setId(hopSession.getId());
         hopSessionDto.setAvailableSeats(hopSession.getAvailableSeats());
         hopSessionDto.setOriginAddress(hopSession.getOriginAddress());
         hopSessionDto.setOriginCity(hopSession.getOriginCity());
@@ -46,5 +49,39 @@ public class SessionMapper {
 
         return hopSessionDto;
 
+    }
+
+    public UserSessionResponseDto mapEntityToResponseDto(HopSession hopSession){
+
+        UserSessionResponseDto userSessionResponseDto = new UserSessionResponseDto();
+        userSessionResponseDto.setId(hopSession.getId());
+        userSessionResponseDto.setAvailableSeats(hopSession.getAvailableSeats());
+        userSessionResponseDto.setOriginAddress(hopSession.getOriginAddress());
+        userSessionResponseDto.setOriginCity(hopSession.getOriginCity());
+        userSessionResponseDto.setOriginZip(hopSession.getOriginZip());
+        userSessionResponseDto.setDestinationAddress(hopSession.getDestinationAddress());
+        userSessionResponseDto.setDestinationCity(hopSession.getDestinationCity());
+        userSessionResponseDto.setDestinationZip(hopSession.getDestinationZip());
+        userSessionResponseDto.setReturnBack(hopSession.getReturnBack());
+        userSessionResponseDto.setReturnTime(hopSession.getReturnTime());
+        userSessionResponseDto.setUserId(hopSession.getHopUser().getId());
+
+        List<HopRequestDto> hopRequestDtos = hopSession.getRideRequests()
+                .stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+        userSessionResponseDto.setHopRequest(hopRequestDtos);
+
+        return userSessionResponseDto;
+    }
+
+    private HopRequestDto convertToDto(HopRequest hopRequest) {
+        HopRequestDto dto = new HopRequestDto();
+        dto.setId(hopRequest.getId());
+        dto.setHopUserId(hopRequest.getHopUser() != null ? hopRequest.getHopUser().getId() : null);
+        dto.setHopSessionId(hopRequest.getHopSession() != null ? hopRequest.getHopSession().getId() : null);
+        dto.setStatus(hopRequest.getStatus());
+        dto.setRequestTime(hopRequest.getRequestTime());
+        return dto;
     }
 }

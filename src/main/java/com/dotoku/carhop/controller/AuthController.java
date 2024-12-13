@@ -2,6 +2,7 @@ package com.dotoku.carhop.controller;
 
 import com.dotoku.carhop.dto.HopUserDto;
 import com.dotoku.carhop.dto.HopUserRequestDto;
+import com.dotoku.carhop.dto.LoginResponseDto;
 import com.dotoku.carhop.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -30,7 +31,7 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "User Logged in Successfully."),
             @ApiResponse(responseCode = "400", description = "Bad request, Id or Password didn't match.") })
     @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestParam String email, @RequestParam String password) {
+    public ResponseEntity<LoginResponseDto> loginUser(@RequestParam String email, @RequestParam String password) {
         return userService.loginUser(email, password);
     }
 }

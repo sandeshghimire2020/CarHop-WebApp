@@ -35,17 +35,20 @@ public class UserService {
 
     @Transactional
     public ResponseEntity<HopUserDto> addUser(HopUserRequestDto userDto){
+        log.debug("Mapping User Dto to Entity: {}", userDto);
         HopUser hopUser = userMapper.mapDtoToEntity(userDto);
         hopUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
         userRepository.save(hopUser);
         userDto.setId(hopUser.getId());
         HopUserDto hopUserDto = userMapper.mapEntityToDto(hopUser);
+        log.info("User Added Successfully.");
         return ResponseEntity.ok(hopUserDto);
     }
 
     public ResponseEntity<HopUserDto> getUser(Long userId){
         HopUser hopUser = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found!"));
+        log.debug("Found User: {}", hopUser);
         HopUserDto userDto = userMapper.mapEntityToDto(hopUser);
         return ResponseEntity.ok(userDto);
     }
@@ -53,34 +56,38 @@ public class UserService {
     public ResponseEntity<HopUserDto> updateUser(HopUserDto userDto, Long userId){
         HopUser hopUser = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found!"));
-
+        log.debug("Found User: {}", hopUser);
         String loggedInEmail = SecurityUtil.getLoggedInEmail();
         if (!hopUser.getEmail().equals(loggedInEmail)) {
             throw new IllegalStateException("You are not authorized to update.");
         }
-
+        log.debug("User authorized: {}", hopUser.getEmail());
         userMapper.mapDtoToEntity(userDto, hopUser);
+        log.debug("Mapped Dto to Entity: {}", userDto);
         userRepository.save(hopUser);
         userDto.setId(hopUser.getId());
+        log.info("User updated Successfully: {}", hopUser.getId());
         return ResponseEntity.ok(userDto);
     }
 
     public ResponseEntity<String> deleteUser(Long userId) {
         HopUser hopUser = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found!"));
-
+        log.debug("Found User: {}", hopUser);
         String loggedInEmail = SecurityUtil.getLoggedInEmail();
         if (!hopUser.getEmail().equals(loggedInEmail)) {
             throw new IllegalStateException("You are not authorized to delete this account.");
         }
-
+        log.debug("User authorized: {}", hopUser.getEmail());
         userRepository.delete(hopUser);
+        log.info("User deleted Successfully.");
         return ResponseEntity.ok("User deleted successfully.");
     }
 
     public List<HopUserDto> getAllUsers(int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber,pageSize);
         Page<HopUser> users = userRepository.findAll(pageable);
+        log.debug("Found Users: {}", users);
         List<HopUserDto> usersDto = users.stream()
                 .map(userMapper::mapEntityToDto)
                 .collect(Collectors.toList());
@@ -90,12 +97,12 @@ public class UserService {
     public ResponseEntity<String> updateVehicle(VehicleDto vehicleDto, long userId) {
         HopUser hopUser = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found!"));
-
+        log.debug("Found User: {}", hopUser);
         String loggedInEmail = SecurityUtil.getLoggedInEmail();
         if (!hopUser.getEmail().equals(loggedInEmail)) {
             throw new IllegalStateException("You are not authorized to update this vehicle.");
         }
-
+        log.debug("User authorized: {}", hopUser.getEmail());
         Vehicle vehicle = hopUser.getVehicle();
 
         vehicle.setMake(vehicleDto.getMake());
@@ -103,24 +110,28 @@ public class UserService {
         vehicle.setModel(vehicleDto.getModel());
         vehicle.setType(vehicleDto.getType());
         vehicle.setYear(vehicleDto.getYear());
-
+        log.debug("Saving Vehicle: {}", vehicle);
         userRepository.save(hopUser);
-
+        log.info("User updated Successfully.");
         return ResponseEntity.ok("Vehicle updated successfully.");
     }
 
-    public ResponseEntity<String> loginUser(String email, String password) {
+    public ResponseEntity<LoginResponseDto> loginUser(String email, String password) {
         HopUser user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("User not found!"));
+        log.debug("Found User: {}", user);
 
-        // Validate password
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new RuntimeException("Invalid credentials");
         }
-
-        // Generate JWT
         String token = jwtUtil.generateToken(user);
-        return ResponseEntity.ok(token);
+        log.debug("Generated Token: {}", token);
+
+        LoginResponseDto loginResponseDto = new LoginResponseDto();
+        loginResponseDto.setUserId(user.getId());
+        loginResponseDto.setToken(token);
+
+        return ResponseEntity.ok(loginResponseDto);
     }
 
 }

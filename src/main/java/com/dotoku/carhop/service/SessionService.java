@@ -2,6 +2,7 @@ package com.dotoku.carhop.service;
 
 import com.dotoku.carhop.dto.HopSessionDto;
 import com.dotoku.carhop.dto.SessionResponseDto;
+import com.dotoku.carhop.dto.UserSessionResponseDto;
 import com.dotoku.carhop.dto.mapper.SessionMapper;
 import com.dotoku.carhop.entity.ExpirationDuration;
 import com.dotoku.carhop.entity.HopSession;
@@ -33,7 +34,7 @@ public class SessionService {
 
     public ResponseEntity<SessionResponseDto> startSession(HopSessionDto hopSessionDto, ExpirationDuration expirationDuration){
 
-        //TODO: Vehical map check if it is included as a part of user or not
+        //TODO: Vehicle map check if it is included as a part of user or not
 
         HopSession hopSession = sessionMapper.mapDtoToEntity(hopSessionDto);
 
@@ -63,14 +64,14 @@ public class SessionService {
 
     public ResponseEntity<HopSessionDto> updateSession(long sessionId, HopSessionDto hopSessionDto) {
 
-        //TODO: Vehical is included in User but see if we can show default vehical
+        //TODO: Vehicle is included in User but see if we can show default vehicle
 
         HopSession hopSession = sessionRepository.findById(sessionId)
                 .orElseThrow(() -> new EntityNotFoundException("Session not found!"));
         HopUser hopUser = userRepository.findById(hopSessionDto.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found!"));
 
-        //secirity Here
+        //security Here
         String loggedInEmail = SecurityUtil.getLoggedInEmail();
         if (!hopSession.getHopUser().getEmail().equals(loggedInEmail)) {
             throw new IllegalStateException("You are not authorized to update this session.");
@@ -90,15 +91,14 @@ public class SessionService {
     }
 
 
-    public List<HopSession> getSessionsWithFilters(
+    public ResponseEntity<List<HopSessionDto>> getSessionsWithFilters(
             String originAddress, String originCity, String originState, String originZip,
             String destinationAddress, String destinationCity, String destinationState, String destinationZip
     ) {
         LocalDateTime currentDateTime = LocalDateTime.now();
 
         //TODO: if everything is null getAllSessions should I do it?
-
-        return sessionRepository.findByFilters(
+        List<HopSession> hopSessions = sessionRepository.findByFilters(
                 originAddress,
                 originCity,
                 originState,
@@ -109,6 +109,11 @@ public class SessionService {
                 destinationZip,
                 currentDateTime
         );
+
+        List<HopSessionDto> hopSessionDtos = hopSessions.stream()
+                .map(sessionMapper::mapEntityToDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(hopSessionDtos);
     }
 
     public ResponseEntity<String> deleteSession(long sessionId){
@@ -141,12 +146,13 @@ public class SessionService {
         return ResponseEntity.ok("The session time is increased by " + updateTime.getMinutes() + " minutes.");
     }
 
-    public ResponseEntity<List<HopSessionDto>> getSessionsForUser(long userId){
+    public ResponseEntity<List<UserSessionResponseDto>> getSessionsForUser(long userId){
         List<HopSession> hopSessions = sessionRepository.findByUserId(userId);
-        List<HopSessionDto> hopSessionDtos = hopSessions.stream()
-                .map(sessionMapper::mapEntityToDto)
+        List<UserSessionResponseDto> userSessionResponseDtos = hopSessions.stream()
+                .map(sessionMapper::mapEntityToResponseDto)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(hopSessionDtos);
+
+        return ResponseEntity.ok(userSessionResponseDtos);
     }
 
 
