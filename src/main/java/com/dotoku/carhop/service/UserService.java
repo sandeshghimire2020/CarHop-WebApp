@@ -32,12 +32,14 @@ public class UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final InputSanitizer inputSanitizer;
 
     @Transactional
     public ResponseEntity<HopUserDto> addUser(HopUserRequestDto userDto){
         log.debug("Mapping User Dto to Entity: {}", userDto);
         HopUser hopUser = userMapper.mapDtoToEntity(userDto);
         hopUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        hopUser.setRoles(List.of("USER"));
         userRepository.save(hopUser);
         userDto.setId(hopUser.getId());
         HopUserDto hopUserDto = userMapper.mapEntityToDto(hopUser);
@@ -132,6 +134,14 @@ public class UserService {
         loginResponseDto.setToken(token);
 
         return ResponseEntity.ok(loginResponseDto);
+    }
+
+    public ResponseEntity<RoleDto> assignRole(RoleDto roleDto) {
+        HopUser hopUser = userRepository.findById(roleDto.getUserId())
+                .orElseThrow(() -> new EntityNotFoundException("User not found!"));
+        hopUser.setRoles(roleDto.getRoles());
+        userRepository.save(hopUser);
+        return ResponseEntity.ok(roleDto);
     }
 
 }

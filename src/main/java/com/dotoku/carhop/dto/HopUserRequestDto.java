@@ -1,10 +1,7 @@
 package com.dotoku.carhop.dto;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -26,8 +23,12 @@ public class HopUserRequestDto {
     @Size(min = 1, max = 30, message = "Last name should be at most 30 characters.")
     private String lastName;
 
+    @NotBlank(message = "Email is required")
+    @Email(message = "Invalid email format")
     private String email;
 
+    @NotBlank(message = "Password is required")
+    @Size(min = 8, message = "Password must be at least 8 characters long")
     private String password;
 
     @NotBlank(message = "Date of Birth is required.")

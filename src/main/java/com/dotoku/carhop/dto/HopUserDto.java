@@ -44,5 +44,4 @@ public class HopUserDto {
 
     private List<Long> reviewsId;
 
-    private String role;
 }

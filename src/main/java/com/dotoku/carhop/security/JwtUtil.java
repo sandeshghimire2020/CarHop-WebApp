@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.util.List;
 import java.util.Base64;
 import java.util.Date;
 
@@ -24,7 +25,7 @@ public class JwtUtil {
     public String generateToken(HopUser user) {
         return Jwts.builder()
                 .setSubject(user.getEmail()) // Set the subject as the user's email
-//                .claim("role", user.getRole())
+                .claim("roles", user.getRoles())
                 .setIssuedAt(new Date()) // Current time
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(SECRET_KEY)
@@ -53,6 +54,15 @@ public class JwtUtil {
                 .getBody()
                 .getExpiration()
                 .before(new Date());
+    }
+
+    public List<String> extractRoles(String token) {
+        return (List<String>) Jwts.parserBuilder()
+                .setSigningKey(SECRET_KEY)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("roles");
     }
 }
 

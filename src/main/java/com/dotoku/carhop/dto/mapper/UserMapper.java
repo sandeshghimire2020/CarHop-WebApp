@@ -49,7 +49,6 @@ public class UserMapper {
                 hopUser.setGender(userDto.getGender());
                 hopUser.setVerified(userDto.isVerified());
                 hopUser.setIdentification(identification);
-                hopUser.setRole(userDto.getRole());
         return hopUser;
     }
 
@@ -99,8 +98,6 @@ public class UserMapper {
         hopUserDto.setVerified(hopUser.isVerified());
         hopUserDto.setIdentification(identificationDto);
         hopUserDto.setEmail(hopUser.getEmail());
-        hopUserDto.setRole(hopUser.getRole());
-
         return hopUserDto;
     }
 
