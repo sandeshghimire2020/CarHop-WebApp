@@ -126,4 +126,4 @@ For questions or support, please contact the project maintainer at `sandesh.ghim
 ```
 
 
-![My Image](images/swagger.png)
+![My Image](swagger.png)
