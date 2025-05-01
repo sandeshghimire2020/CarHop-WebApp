@@ -125,5 +125,5 @@ Contributions are welcome! Please fork the repository and submit a pull request.
 For questions or support, please contact the project maintainer at `sandesh.ghimire2020@gmail.com`.
 ```
 
+<img width="1517" alt="swagger" src="https://github.com/user-attachments/assets/c0afa131-c9a3-49c2-811d-8007202477a8" />
 
-![My Image](swagger.png)
